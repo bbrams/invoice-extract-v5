@@ -1,0 +1,19 @@
+ZOHO Corporation Pte Ltd
+ZOHO Invoice
+
+Tax Invoice# 131898257
+
+Invoice Date Jul 07, 2023
+
+Bill To:
+BRAMS Technologies LLC
+Dubai, UAE
+
+Description             Qty     Rate        Amount
+ZOHO One Suite           1     US$2,100.00  US$2,100.00
+
+Total US$2,100.00
+
+Amount Due: US$2,100.00
+
+Payment: Credit Card

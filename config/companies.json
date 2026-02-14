@@ -1,0 +1,19 @@
+{
+  "companies": [
+    {
+      "id": "brams_tech_llc",
+      "name": "BRAMS Technologies LLC",
+      "vat_calendar": {
+        "type": "uae_trn",
+        "quarters": {
+          "Q1": {"start_month": 2, "end_month": 4},
+          "Q2": {"start_month": 5, "end_month": 7},
+          "Q3": {"start_month": 8, "end_month": 10},
+          "Q4": {"start_month": 11, "end_month": 1}
+        },
+        "notes": "Q4 spans Nov-Jan. January belongs to Q4 of the PREVIOUS year."
+      }
+    }
+  ],
+  "default_company": "brams_tech_llc"
+}

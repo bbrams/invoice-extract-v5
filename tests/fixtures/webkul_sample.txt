@@ -1,0 +1,21 @@
+Webkul Software Pvt. Ltd.
+H-28, Sector 63, Noida
+Uttar Pradesh, India
+
+Invoice No: INV/23-24/35111
+Invoice Date: 16 Jun 2023
+
+Bill To:
+BRAMS Technologies LLC
+Dubai, United Arab Emirates
+
+Description                    Amount
+Odoo Custom Module Dev         $ 349.00
+
+Total                          $ 349.00
+
+Amount Total(INR): 28,740.15 ₹
+
+Total (In Words): Three Hundred And Forty-Nine Dollars
+
+Payment: Wire Transfer

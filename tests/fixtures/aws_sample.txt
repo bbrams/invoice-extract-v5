@@ -1,0 +1,21 @@
+Amazon Web Services, Inc.
+
+Invoice Number: 2030491957
+Invoice Date: February 1, 2025
+
+Bill To:
+BRAMS Technologies LLC
+Dubai, United Arab Emirates
+
+Service Charges:
+Amazon EC2      $250.00
+Amazon S3       $142.37
+Amazon RDS      $200.00
+
+Subtotal: $592.37
+
+TOTAL AMOUNT DUE ON February 1, 2025 $592.37
+
+TOTAL AMOUNT Payable USD 592.37
+
+Payment Terms: Net 30

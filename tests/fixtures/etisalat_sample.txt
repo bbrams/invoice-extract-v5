@@ -1,0 +1,28 @@
+Emirates Telecommunications Group Company
+(Etisalat Group)
+
+BRAMS Technologies LLC
+P.O. Box 12345, Dubai, UAE
+
+Bill issue date 15 January 2025
+Bill number INV1965257146
+
+Account number 1234567890
+
+Plan Business Unlimited
+Monthly charge 125.00
+
+Current month charges
+Data 150.00
+Voice 75.00
+Roaming 45.26
+
+Subtotal (excl 5% VAT) 395.26
+VAT 5% 19.76
+Grand total (Incl 5% VAT)960 .34
+
+Total Amount Due 960.34
+
+Balance after credits 1499.70
+
+www.etisalat.ae

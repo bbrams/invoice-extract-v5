@@ -1,0 +1,24 @@
+Amazon Services Europe S.a.r.l.
+
+Facture
+Numéro de la facture FR-2024-78901
+
+Date de la facture: 15 Mars 2024
+
+Vendu par Amazon Services Europe S.a.r.l.
+
+Livraison:
+BRAMS Technologies LLC
+Dubai, UAE
+
+Article                         Prix
+Clavier Logitech MX Keys       89,99 €
+Souris MX Master 3              79,99 €
+Hub USB-C                       49,99 €
+
+Sous-total                     219,97 €
+TVA 20%                         44,00 €
+
+Total à payer 263,97 €
+
+Merci pour votre achat.

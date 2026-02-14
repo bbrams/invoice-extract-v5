@@ -1,0 +1,232 @@
+{
+  "suppliers": [
+    {
+      "id": "etisalat",
+      "display_name": "Etisalat",
+      "detection_patterns": [
+        "Emirates Telecommunications Group",
+        "Etisalat Group",
+        "www.etisalat.ae",
+        "Bill number INV"
+      ],
+      "default_currency": "AED",
+      "invoice_number_pattern": "Bill\\s*number\\s+(INV[0-9]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*Amount\\s*Due\\s*([\\d.,\\s]+)", "priority": 1},
+        {"pattern": "Grand\\s*total[^\\n]*?([\\d][\\d.,\\s]*\\d)", "priority": 2},
+        {"pattern": "Grand\\s*total\\s*\\([^)]*\\)\\s*([\\d][\\d.,\\s]*\\d)", "priority": 3},
+        {"pattern": "Total.*?incl.*?VAT.*?([\\d][\\d.,\\s]*\\d)", "priority": 4},
+        {"pattern": "Balance\\s*after.*?([\\d.,]+)", "priority": 5}
+      ],
+      "date_context": ["Bill issue date", "Bill date"],
+      "notes": "OCR breaks amounts with spaces (960 .34)"
+    },
+    {
+      "id": "aws",
+      "display_name": "AWS",
+      "detection_patterns": [
+        "Amazon Web Services, Inc",
+        "Amazon Web Services"
+      ],
+      "default_currency": "USD",
+      "invoice_number_pattern": "(?:Invoice\\s*Number|Tax\\s*Invoice\\s*Number)\\s*:?\\s*([A-Za-z0-9-]+)",
+      "amount_patterns": [
+        {"pattern": "TOTAL\\s*AMOUNT\\s*DUE.*?\\$([\\d.,]+)", "priority": 1},
+        {"pattern": "TOTAL\\s*AMOUNT\\s*Payable.*?USD\\s*([\\d.,]+)", "priority": 2}
+      ],
+      "date_context": ["Invoice Date"]
+    },
+    {
+      "id": "du_telecom",
+      "display_name": "DU",
+      "detection_patterns": [
+        "Emirates Integrated Telecommunications",
+        "du.ae"
+      ],
+      "default_currency": "AED",
+      "invoice_number_pattern": "(?:Your\\s*)?[Bb]ill\\s*number\\s*:?\\s*([0-9]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*amount\\s*due.*?AED\\s*([\\d.,]+)", "priority": 1},
+        {"pattern": "AED\\s*([\\d.,]+)\\s*\\+", "priority": 2}
+      ],
+      "date_context": ["Bill date", "Bill issue date"]
+    },
+    {
+      "id": "zoho",
+      "display_name": "ZOHO",
+      "detection_patterns": [
+        "ZOHO Corporation"
+      ],
+      "default_currency": "USD",
+      "invoice_number_pattern": "Tax\\s*Invoice#\\s*([0-9]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*US\\$([\\d.,]+)", "priority": 1}
+      ]
+    },
+    {
+      "id": "cursor",
+      "display_name": "Cursor",
+      "detection_patterns": [
+        "Anysphere, Inc",
+        "Anysphere Inc",
+        "Cursor"
+      ],
+      "default_currency": "USD",
+      "invoice_number_pattern": "Invoice\\s*number\\s+([A-Za-z0-9-]+)",
+      "amount_patterns": [
+        {"pattern": "\\$([\\d.,]+)\\s*USD", "priority": 1},
+        {"pattern": "Amount\\s*due\\s*\\$([\\d.,]+)", "priority": 2}
+      ],
+      "date_context": ["Date of issue"]
+    },
+    {
+      "id": "hilton",
+      "display_name": "Hilton",
+      "detection_patterns": [
+        "Hilton Hotels",
+        "Hilton"
+      ],
+      "default_currency": "AED",
+      "invoice_number_pattern": "(?:COPY\\s*OF\\s*INVOICE|Confirmation\\s*Number)\\s*:?\\s*([0-9]+)",
+      "amount_patterns": [
+        {"pattern": "BALANCE\\s*([\\d.,]+)", "priority": 1}
+      ],
+      "date_context": ["INVOICE ISSUED"]
+    },
+    {
+      "id": "iubenda",
+      "display_name": "iubenda",
+      "detection_patterns": [
+        "iubenda srl",
+        "iubenda"
+      ],
+      "default_currency": "USD",
+      "invoice_number_pattern": "Invoice\\s*#([0-9/\\-]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*\\$\\s*([\\d.,]+)", "priority": 1}
+      ]
+    },
+    {
+      "id": "webkul",
+      "display_name": "Webkul_Software_Pvt_Ltd",
+      "detection_patterns": [
+        "Webkul Software"
+      ],
+      "default_currency": "USD",
+      "invoice_number_pattern": "Invoice\\s*No\\.?\\s*:?\\s*([A-Za-z0-9/-]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*\\$\\s*([\\d.,]+)", "priority": 1},
+        {"pattern": "\\$\\s*([\\d.,]+)\\s*$", "priority": 2}
+      ]
+    },
+    {
+      "id": "adamjee",
+      "display_name": "Adamjee_Insurance",
+      "detection_patterns": [
+        "ADAMJEE INSURANCE COMPANY"
+      ],
+      "default_currency": "AED",
+      "invoice_number_pattern": null,
+      "amount_patterns": [
+        {"pattern": "TOTAL\\s*PREMIUM\\s*WITH.*?AED\\s*([\\d.,]+)", "priority": 1},
+        {"pattern": "Grand\\s*Total\\s*([\\d.,]+)", "priority": 2}
+      ]
+    },
+    {
+      "id": "watania",
+      "display_name": "Watania_Takaful",
+      "detection_patterns": [
+        "Watania Takaful"
+      ],
+      "default_currency": "AED",
+      "invoice_number_pattern": null,
+      "amount_patterns": [
+        {"pattern": "Total\\s*Contribution\\s*:?\\s*AED\\s*([\\d.,]+)", "priority": 1}
+      ]
+    },
+    {
+      "id": "brams_sa",
+      "display_name": "BRAMS_SA",
+      "detection_patterns": [
+        "BRAMS SA"
+      ],
+      "default_currency": "USD",
+      "invoice_number_pattern": "Invoice#\\s*([A-Za-z0-9-]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*\\$([\\d.,]+)", "priority": 1}
+      ]
+    },
+    {
+      "id": "preciseways",
+      "display_name": "Preciseways",
+      "detection_patterns": [
+        "Preciseways Private Limited"
+      ],
+      "default_currency": "USD",
+      "invoice_number_pattern": "Customer\\s*Invoices?\\s*([A-Za-z0-9/]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*\\$([\\d.,]+)", "priority": 1}
+      ]
+    },
+    {
+      "id": "emirates_post",
+      "display_name": "Emirates_Post",
+      "detection_patterns": [
+        "Emirates Post"
+      ],
+      "default_currency": "AED",
+      "invoice_number_pattern": "Invoice\\s*No\\s*:?\\s*([0-9]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*Amount.*?([\\d.,]+)", "priority": 1},
+        {"pattern": "Total\\s*Payable\\s+AED\\s*([\\d.,]+)", "priority": 2}
+      ]
+    },
+    {
+      "id": "whmcs",
+      "display_name": "WHMCS",
+      "detection_patterns": [
+        "WHMCS Limited"
+      ],
+      "default_currency": "USD",
+      "invoice_number_pattern": "Invoice\\s*#\\s*([A-Za-z0-9-]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*\\$([\\d.,]+)", "priority": 1}
+      ]
+    },
+    {
+      "id": "amazon_marketplace",
+      "display_name": "Amazon",
+      "detection_patterns": [
+        "Amazon Services Europe",
+        "Amazon.ae",
+        "Amazon EU"
+      ],
+      "default_currency": "EUR",
+      "invoice_number_pattern": "Document\\s*Number\\s*:?\\s*([A-Za-z0-9-]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*à\\s*payer\\s*([\\d.,]+)", "priority": 1},
+        {"pattern": "Total.*?([\\d.,]+)\\s*€", "priority": 2}
+      ],
+      "date_context": ["Date"]
+    },
+    {
+      "id": "qtg_travel",
+      "display_name": "QTG_Travel",
+      "detection_patterns": [
+        "QTG-TTV",
+        "Q-Tech General Trading"
+      ],
+      "default_currency": "AED",
+      "invoice_number_pattern": "Tax\\s*Invoice\\s*Number\\s*:?\\s*([A-Za-z0-9-]+)",
+      "amount_patterns": [
+        {"pattern": "Total\\s*Payable\\s+AED\\s*([\\d.,]+)", "priority": 1}
+      ]
+    }
+  ],
+  "own_companies": [
+    "BRAMS Technologies LLC",
+    "BRAMS TECHNOLOGIES L.L.C",
+    "BRAMS TECHNOLOGIES LLC",
+    "BRAMS Technologies L.L.C"
+  ]
+}
