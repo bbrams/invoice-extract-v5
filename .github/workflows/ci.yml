@@ -1,0 +1,87 @@
+name: CI / CD
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+env:
+  GCP_PROJECT_ID: brams-private
+  FUNCTION_NAME: process-invoice
+  ENTRY_POINT: process_invoice_http
+  RUNTIME: python311
+  REGION: ${{ vars.GCP_REGION || 'us-central1' }}
+
+jobs:
+  # ── Tests ──────────────────────────────────────────────
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+
+      - name: Install Python dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests with coverage
+        run: pytest tests/ -v --tb=short --cov=core --cov-report=term-missing
+
+  # ── Deploy to Cloud Functions (on push to main) ───────
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Functions (2nd gen)
+        run: |
+          gcloud functions deploy ${{ env.FUNCTION_NAME }} \
+            --project=${{ env.GCP_PROJECT_ID }} \
+            --gen2 \
+            --runtime=${{ env.RUNTIME }} \
+            --region=${{ env.REGION }} \
+            --source=. \
+            --entry-point=${{ env.ENTRY_POINT }} \
+            --trigger-http \
+            --allow-unauthenticated \
+            --memory=512Mi \
+            --timeout=120s \
+            --min-instances=0 \
+            --max-instances=10
+
+      - name: Print function URL
+        run: |
+          gcloud functions describe ${{ env.FUNCTION_NAME }} \
+            --project=${{ env.GCP_PROJECT_ID }} \
+            --gen2 \
+            --region=${{ env.REGION }} \
+            --format='value(serviceConfig.uri)'

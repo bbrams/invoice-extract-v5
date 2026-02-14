@@ -1,0 +1,12 @@
+# Core extraction
+pdfplumber>=0.10.0
+pydantic>=2.0.0
+dateparser>=1.2.0
+price-parser>=0.3.4
+
+# Google Cloud Vision OCR (optional - for scanned PDFs and images)
+google-cloud-vision>=3.5.0
+
+# Image processing (required for Vision OCR fallback)
+pdf2image>=1.16.0
+Pillow>=10.0.0
