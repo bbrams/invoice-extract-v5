@@ -15,3 +15,6 @@ google-auth-oauthlib>=1.0.0
 # Image processing (required for Vision OCR fallback)
 pdf2image>=1.16.0
 Pillow>=10.0.0
+
+# Cloud Function framework
+functions-framework>=3.0.0

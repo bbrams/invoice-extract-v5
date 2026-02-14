@@ -1,0 +1,35 @@
+{
+  "timeZone": "Asia/Dubai",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Drive",
+        "version": "v3",
+        "serviceId": "drive"
+      }
+    ]
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/script.external_request",
+    "https://www.googleapis.com/auth/userinfo.email"
+  ],
+  "addOns": {
+    "common": {
+      "name": "Invoice Manager",
+      "logoUrl": "https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_pdf_x32.png",
+      "layoutProperties": {
+        "primaryColor": "#2196F3"
+      }
+    },
+    "drive": {
+      "homepageTrigger": {
+        "runFunction": "onDriveHomepage"
+      },
+      "onItemsSelectedTrigger": {
+        "runFunction": "onDriveItemsSelected"
+      }
+    }
+  },
+  "exceptionLogging": "STACKDRIVER"
+}
