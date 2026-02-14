@@ -7,6 +7,7 @@ on:
     branches: [main, master]
 
 env:
+  GCP_PROJECT_ID: brams-private
   FUNCTION_NAME: process-invoice
   ENTRY_POINT: process_invoice_http
   RUNTIME: python311
@@ -64,6 +65,7 @@ jobs:
       - name: Deploy to Cloud Functions (2nd gen)
         run: |
           gcloud functions deploy ${{ env.FUNCTION_NAME }} \
+            --project=${{ env.GCP_PROJECT_ID }} \
             --gen2 \
             --runtime=${{ env.RUNTIME }} \
             --region=${{ env.REGION }} \
@@ -79,6 +81,7 @@ jobs:
       - name: Print function URL
         run: |
           gcloud functions describe ${{ env.FUNCTION_NAME }} \
+            --project=${{ env.GCP_PROJECT_ID }} \
             --gen2 \
             --region=${{ env.REGION }} \
             --format='value(serviceConfig.uri)'

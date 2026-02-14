@@ -8,16 +8,21 @@
 #   - GitHub CLI installed (gh) for setting secrets automatically
 #
 # Usage:
-#   ./scripts/setup-gcp-wif.sh <GCP_PROJECT_ID> <GITHUB_REPO>
+#   ./scripts/setup-gcp-wif.sh [GCP_PROJECT_ID] [GITHUB_REPO]
+#
+# Defaults (your project):
+#   PROJECT_ID:  brams-private  (project number: 865961533155)
+#   GITHUB_REPO: bbrams/invoice-extract-v5
 #
 # Example:
-#   ./scripts/setup-gcp-wif.sh my-gcp-project bbrams/invoice-extract-v5
+#   ./scripts/setup-gcp-wif.sh                                   # uses defaults
+#   ./scripts/setup-gcp-wif.sh brams-private bbrams/invoice-extract-v5
 
 set -euo pipefail
 
-# ── Args ─────────────────────────────────────────────────
-PROJECT_ID="${1:?Usage: $0 <GCP_PROJECT_ID> <GITHUB_REPO>}"
-GITHUB_REPO="${2:?Usage: $0 <GCP_PROJECT_ID> <GITHUB_REPO>}"
+# ── Args (with project defaults) ─────────────────────────
+PROJECT_ID="${1:-brams-private}"
+GITHUB_REPO="${2:-bbrams/invoice-extract-v5}"
 
 SA_NAME="github-actions-deployer"
 SA_EMAIL="${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com"
