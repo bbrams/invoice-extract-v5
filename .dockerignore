@@ -1,0 +1,12 @@
+.git
+.github
+__pycache__
+*.pyc
+*.pyo
+tests/
+*.md
+.gcloudignore
+.dockerignore
+requirements-dev.txt
+.pytest_cache/
+.venv/
