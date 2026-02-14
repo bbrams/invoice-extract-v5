@@ -126,6 +126,9 @@ class InvoicePipeline:
             dirpath=dirpath,
         )
 
+        # Keep raw text when supplier is unknown (for learning)
+        raw_text = text if supplier_name == "Unknown" or supplier_template is None else None
+
         return ExtractionResult(
             invoice_data=invoice_data,
             supplier_template=supplier_template,
@@ -134,6 +137,7 @@ class InvoicePipeline:
             accounting_prefix=accounting_prefix,
             vat_quarter=vat_quarter,
             errors=errors,
+            raw_text=raw_text,
         )
 
     def process_text(
@@ -173,6 +177,8 @@ class InvoicePipeline:
             vat_quarter=vat_quarter,
         )
 
+        raw_text = text if supplier_name == "Unknown" or supplier_template is None else None
+
         return ExtractionResult(
             invoice_data=invoice_data,
             supplier_template=supplier_template,
@@ -180,6 +186,61 @@ class InvoicePipeline:
             new_filename=new_filename,
             accounting_prefix=accounting_prefix,
             vat_quarter=vat_quarter,
+            raw_text=raw_text,
+        )
+
+    def reprocess_with_supplier(
+        self,
+        result: ExtractionResult,
+        supplier_name: str,
+        supplier_template: Optional[dict] = None,
+    ) -> ExtractionResult:
+        """
+        Re-run field extraction with a user-provided supplier name/template.
+        Reuses the already-extracted text to avoid re-reading the file.
+        """
+        text = result.raw_text
+        if not text:
+            # No raw text available, just update the supplier name
+            result.invoice_data.supplier = supplier_name
+            result.invoice_data.confidence = self._calculate_confidence(result.invoice_data)
+            return result
+
+        # Re-extract fields with the new template context
+        invoice_number = extract_invoice_number(text, supplier_template)
+        invoice_date = extract_date(text, supplier_template)
+        amount, currency = extract_amount_and_currency(text, supplier_template)
+
+        # Use template's default currency if extraction found nothing
+        if not currency and supplier_template and supplier_template.get('default_currency'):
+            currency = supplier_template['default_currency']
+
+        invoice_data = InvoiceData(
+            supplier=supplier_name,
+            invoice_number=invoice_number or result.invoice_data.invoice_number,
+            invoice_date=invoice_date or result.invoice_data.invoice_date,
+            amount=amount or result.invoice_data.amount,
+            currency=currency or result.invoice_data.currency,
+            extraction_method=result.invoice_data.extraction_method,
+        )
+        invoice_data.confidence = self._calculate_confidence(invoice_data)
+
+        from .naming import generate_filename
+        new_filename = generate_filename(
+            data=invoice_data,
+            original_filename=result.original_filename,
+            accounting_prefix=result.accounting_prefix,
+            vat_quarter=result.vat_quarter,
+        )
+
+        return ExtractionResult(
+            invoice_data=invoice_data,
+            supplier_template=supplier_template,
+            original_filename=result.original_filename,
+            new_filename=new_filename,
+            accounting_prefix=result.accounting_prefix,
+            vat_quarter=result.vat_quarter,
+            errors=result.errors,
         )
 
     @staticmethod

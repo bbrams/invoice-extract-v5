@@ -62,7 +62,7 @@ def process_invoice_http(request):
         else:
             return json.dumps({"error": "Unsupported content type"}), 400
 
-        return json.dumps({
+        response = {
             "original_filename": result.original_filename,
             "new_filename": result.new_filename,
             "supplier": result.invoice_data.supplier,
@@ -75,10 +75,61 @@ def process_invoice_http(request):
             "vat_quarter": result.vat_quarter,
             "accounting_prefix": result.accounting_prefix,
             "errors": result.errors,
-        }), 200
+        }
+
+        # Flag when supplier was not recognized, so the caller can trigger learning
+        if result.invoice_data.supplier == "Unknown":
+            response["supplier_unknown"] = True
+            # Include text preview for the learning UI
+            if result.raw_text:
+                lines = [l.strip() for l in result.raw_text.split('\n') if l.strip()]
+                response["text_preview"] = lines[:15]
+
+        return json.dumps(response), 200
 
     except Exception as e:
         logger.error(f"Error processing invoice: {e}", exc_info=True)
+        return json.dumps({"error": str(e)}), 500
+
+
+def learn_supplier_http(request):
+    """
+    HTTP endpoint to register a new supplier.
+    Expects JSON body:
+    {
+        "supplier_name": "Acme Corp",
+        "default_currency": "USD",           // optional
+        "detection_patterns": ["Acme Corp"]   // optional, auto-detected if omitted
+    }
+    """
+    try:
+        if 'application/json' not in (request.content_type or ''):
+            return json.dumps({"error": "Content-Type must be application/json"}), 400
+
+        data = request.get_json()
+        supplier_name = data.get('supplier_name')
+        if not supplier_name:
+            return json.dumps({"error": "supplier_name is required"}), 400
+
+        from core.extractors.supplier_learner import create_supplier_template, save_supplier_template
+
+        template = create_supplier_template(
+            supplier_name=supplier_name,
+            text=data.get('text', ''),
+            default_currency=data.get('default_currency'),
+            detection_patterns=data.get('detection_patterns'),
+        )
+
+        saved = save_supplier_template(template)
+
+        return json.dumps({
+            "saved": saved,
+            "template": template,
+            "message": f"Supplier '{supplier_name}' {'saved' if saved else 'already exists'}",
+        }), 200 if saved else 409
+
+    except Exception as e:
+        logger.error(f"Error learning supplier: {e}", exc_info=True)
         return json.dumps({"error": str(e)}), 500
 
 
@@ -104,6 +155,7 @@ def main():
     parser.add_argument("files", nargs="+", help="Files to process")
     parser.add_argument("--rename", action="store_true", help="Actually rename files")
     parser.add_argument("--no-vat", action="store_true", help="Skip VAT quarter")
+    parser.add_argument("--no-learn", action="store_true", help="Skip supplier learning prompts")
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 
@@ -127,6 +179,21 @@ def main():
         if result.errors:
             print(f"ERRORS for {result.original_filename}: {result.errors}")
             continue
+
+        # If supplier is unknown, offer interactive learning
+        if not args.no_learn and result.invoice_data.supplier == "Unknown" and result.raw_text:
+            from core.extractors.supplier_learner import prompt_supplier_info
+            learned = prompt_supplier_info(result.raw_text)
+            if learned:
+                result = pipeline.reprocess_with_supplier(
+                    result,
+                    supplier_name=learned['display_name'],
+                    supplier_template=learned,
+                )
+                # Reload supplier extractor to pick up the new template
+                pipeline.supplier_extractor = __import__(
+                    'core.extractors.supplier', fromlist=['SupplierExtractor']
+                ).SupplierExtractor()
 
         print(f"{result.original_filename} -> {result.new_filename}")
         print(f"  Supplier: {result.invoice_data.supplier}")
