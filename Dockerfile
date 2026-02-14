@@ -18,6 +18,9 @@ COPY . .
 ENV PORT=8080
 
 # Use functions-framework to serve the Cloud Function
+# Default target: process_invoice_http
+# Other targets available: learn_supplier_http, health_http
 RUN pip install --no-cache-dir functions-framework
 
-CMD exec functions-framework --target=process_invoice_http --port=${PORT}
+ENV FUNCTION_TARGET=process_invoice_http
+CMD exec functions-framework --target=${FUNCTION_TARGET} --port=${PORT}

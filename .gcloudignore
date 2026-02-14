@@ -12,3 +12,5 @@ Dockerfile
 requirements-dev.txt
 .pytest_cache/
 .venv/
+apps_script/
+config/

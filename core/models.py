@@ -5,7 +5,7 @@ Pydantic models for invoice data extraction and validation.
 from datetime import date as date_type
 from decimal import Decimal
 from typing import Optional
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class InvoiceData(BaseModel):
@@ -79,5 +79,27 @@ class ExtractionResult(BaseModel):
     new_filename: str = ""
     accounting_prefix: Optional[str] = None
     vat_quarter: Optional[str] = None
-    errors: list[str] = []
+    errors: list[str] = Field(default_factory=list)
     raw_text: Optional[str] = None  # Kept for supplier learning when supplier is Unknown
+
+
+class ProcessRequest(BaseModel):
+    """Validated request payload for the Cloud Function."""
+    file_id: Optional[str] = None
+    folder_id: Optional[str] = None
+    company_id: Optional[str] = None
+    dry_run: bool = False
+    rename: bool = False
+    move_to: Optional[str] = None
+    include_vat_quarter: bool = True
+    debug: bool = False
+
+    @field_validator('file_id', 'folder_id', 'company_id', 'move_to')
+    @classmethod
+    def sanitize_ids(cls, v):
+        """Reject IDs with suspicious characters (injection protection)."""
+        if v is not None:
+            import re
+            if not re.match(r'^[A-Za-z0-9_-]{1,128}$', v):
+                raise ValueError(f'Invalid ID format: must be alphanumeric, max 128 chars')
+        return v

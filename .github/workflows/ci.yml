@@ -8,8 +8,6 @@ on:
 
 env:
   GCP_PROJECT_ID: brams-private
-  FUNCTION_NAME: process-invoice
-  ENTRY_POINT: process_invoice_http
   RUNTIME: python311
   REGION: ${{ vars.GCP_REGION || 'us-central1' }}
 
@@ -40,7 +38,7 @@ jobs:
       - name: Run tests with coverage
         run: pytest tests/ -v --tb=short --cov=core --cov-report=term-missing
 
-  # ── Deploy to Cloud Functions (on push to main) ───────
+  # ── Deploy Cloud Functions (on push to main) ──────────
   deploy:
     needs: test
     runs-on: ubuntu-latest
@@ -62,26 +60,69 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Deploy to Cloud Functions (2nd gen)
+      # ── Deploy process-invoice (main endpoint) ──────
+      - name: Deploy process-invoice
         run: |
-          gcloud functions deploy ${{ env.FUNCTION_NAME }} \
+          gcloud functions deploy process-invoice \
             --project=${{ env.GCP_PROJECT_ID }} \
             --gen2 \
             --runtime=${{ env.RUNTIME }} \
             --region=${{ env.REGION }} \
             --source=. \
-            --entry-point=${{ env.ENTRY_POINT }} \
+            --entry-point=process_invoice_http \
             --trigger-http \
-            --allow-unauthenticated \
-            --memory=512Mi \
-            --timeout=120s \
+            --no-allow-unauthenticated \
+            --memory=1Gi \
+            --timeout=300s \
             --min-instances=0 \
-            --max-instances=10
+            --max-instances=10 \
+            --set-secrets="INVOICE_API_KEY=invoice-api-key:latest" \
+            --service-account=${{ secrets.CF_SERVICE_ACCOUNT }}
 
-      - name: Print function URL
+      # ── Deploy learn-supplier ───────────────────────
+      - name: Deploy learn-supplier
         run: |
-          gcloud functions describe ${{ env.FUNCTION_NAME }} \
+          gcloud functions deploy learn-supplier \
             --project=${{ env.GCP_PROJECT_ID }} \
             --gen2 \
+            --runtime=${{ env.RUNTIME }} \
             --region=${{ env.REGION }} \
-            --format='value(serviceConfig.uri)'
+            --source=. \
+            --entry-point=learn_supplier_http \
+            --trigger-http \
+            --no-allow-unauthenticated \
+            --memory=256Mi \
+            --timeout=30s \
+            --min-instances=0 \
+            --max-instances=3 \
+            --set-secrets="INVOICE_API_KEY=invoice-api-key:latest" \
+            --service-account=${{ secrets.CF_SERVICE_ACCOUNT }}
+
+      # ── Deploy health check ─────────────────────────
+      - name: Deploy health-check
+        run: |
+          gcloud functions deploy health-check \
+            --project=${{ env.GCP_PROJECT_ID }} \
+            --gen2 \
+            --runtime=${{ env.RUNTIME }} \
+            --region=${{ env.REGION }} \
+            --source=. \
+            --entry-point=health_http \
+            --trigger-http \
+            --no-allow-unauthenticated \
+            --memory=128Mi \
+            --timeout=10s \
+            --min-instances=0 \
+            --max-instances=3 \
+            --service-account=${{ secrets.CF_SERVICE_ACCOUNT }}
+
+      - name: Print function URLs
+        run: |
+          for fn in process-invoice learn-supplier health-check; do
+            echo "=== $fn ==="
+            gcloud functions describe $fn \
+              --project=${{ env.GCP_PROJECT_ID }} \
+              --gen2 \
+              --region=${{ env.REGION }} \
+              --format='value(serviceConfig.uri)' 2>/dev/null || echo "Not deployed yet"
+          done

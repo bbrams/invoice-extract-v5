@@ -43,6 +43,7 @@ class InvoicePipeline:
         self,
         filepath: str,
         include_vat_quarter: bool = True,
+        company_id: Optional[str] = None,
         debug: bool = False,
     ) -> ExtractionResult:
         """
@@ -115,7 +116,7 @@ class InvoicePipeline:
         # Step 5: VAT quarter
         vat_quarter = None
         if include_vat_quarter and invoice_date:
-            vat_quarter = self.vat_classifier.classify(invoice_date)
+            vat_quarter = self.vat_classifier.classify(invoice_date, company_id=company_id)
 
         # Step 6: Generate filename
         new_filename = generate_filename(
