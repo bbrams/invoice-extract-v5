@@ -80,3 +80,4 @@ class ExtractionResult(BaseModel):
     accounting_prefix: Optional[str] = None
     vat_quarter: Optional[str] = None
     errors: list[str] = []
+    raw_text: Optional[str] = None  # Kept for supplier learning when supplier is Unknown
