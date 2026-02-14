@@ -7,6 +7,11 @@ price-parser>=0.3.4
 # Google Cloud Vision OCR (optional - for scanned PDFs and images)
 google-cloud-vision>=3.5.0
 
+# Google Drive integration (optional - for processing invoices from Drive)
+google-api-python-client>=2.100.0
+google-auth-httplib2>=0.2.0
+google-auth-oauthlib>=1.0.0
+
 # Image processing (required for Vision OCR fallback)
 pdf2image>=1.16.0
 Pillow>=10.0.0

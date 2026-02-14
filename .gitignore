@@ -26,3 +26,4 @@ Thumbs.db
 *.json.key
 service-account*.json
 credentials*.json
+config/drive_token.json
